@@ -7,7 +7,11 @@ char* validDirectory(char *dirpath){
 	if(dirpath[0] != '/' && dirpath[0] != '.'){
 		printf("Not a valid directory path");
 		exit(1);
-	}	
+	}
+	int pathlen = strlen(dirpath);
+	if(dirpath[pathlen - 1] != '/'){
+		dirpath = strcat(dirpath, "/");
+	}
 	return dirpath;
 }
 
@@ -18,11 +22,12 @@ int main(int argc, char *argv[]){
 	FILE *f;
 	struct dirent *dir;
 	int count = 0;
+	int ch;
 	char *dirpath;
 	char *opath;
 
 	dirpath = validDirectory(argv[1]);
-	
+	int pathlen = strlen(dirpath);
 	opath = malloc(sizeof(dirpath));
 	strcpy(opath, dirpath);
 	printf("The directory path is: %s\n", dirpath);
@@ -30,8 +35,13 @@ int main(int argc, char *argv[]){
 		while((dir = readdir(d)) != NULL) {
 			if(dir->d_type == DT_REG){
 				printf("Directory name: %s\n",opath);
-				printf("File path: %s\n",strcat(strcat(dirpath, "/"), dir->d_name));
+				char *filepath = strcat(dirpath, dir->d_name);
+				printf("File path: %s\n",filepath);
 				printf("File name: %s\n",dir->d_name);
+				f = fopen(filepath, "r");
+				while((ch  = fgetc(f)) != EOF){
+					printf("%c",ch);
+				}	
 				strcpy(dirpath,opath);
 			}
 		
