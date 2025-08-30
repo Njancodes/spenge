@@ -39,9 +39,10 @@ int main(int argc, char *argv[]){
 				printf("File path: %s\n",filepath);
 				printf("File name: %s\n",dir->d_name);
 				f = fopen(filepath, "r");
-				while((ch  = fgetc(f)) != EOF){
+				while((ch  = getc(f)) != EOF){
 					printf("%c",ch);
-				}	
+				}
+				fclose(f);	
 				strcpy(dirpath,opath);
 			}
 		
@@ -53,5 +54,6 @@ int main(int argc, char *argv[]){
 		printf("Error in opening the directory");
 		exit(1);
 	}
+	printf("The number of files: %d",count);
 	return 0;
 }
