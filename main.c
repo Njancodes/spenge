@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <dirent.h>
+#include <ctype.h>
 #include <stdlib.h>
 
 char* validDirectory(char *dirpath){
@@ -25,6 +26,7 @@ int main(int argc, char *argv[]){
 	int ch;
 	char *dirpath;
 	char *opath;
+	char choice;
 
 	dirpath = validDirectory(argv[1]);
 	int pathlen = strlen(dirpath);
@@ -39,14 +41,25 @@ int main(int argc, char *argv[]){
 				printf("File path: %s\n",filepath);
 				printf("File name: %s\n",dir->d_name);
 				f = fopen(filepath, "r");
+				printf("\n");
 				while((ch  = getc(f)) != EOF){
 					printf("%c",ch);
 				}
+				
+				printf("\n Do you want to delete (X) or save (S) this file (%s): ",dir->d_name);
+				scanf("%c",&choice);
+				getchar();
+				if(toupper(choice) == 'X'){
+					printf("\nThe file (%s) is to be deleted", dir->d_name);
+				}else if(toupper(choice) == 'S'){
+					printf("\nThe file (%s) is to be saved",dir->d_name);
+				}else{
+					printf("\nPlease give an appropriate response");
+				}
+				printf("\n");
 				fclose(f);	
 				strcpy(dirpath,opath);
 			}
-		
-			printf("\n");
 			count += 1;
 		}	
 		count -= 2;	
@@ -54,6 +67,5 @@ int main(int argc, char *argv[]){
 		printf("Error in opening the directory");
 		exit(1);
 	}
-	printf("The number of files: %d",count);
 	return 0;
 }
