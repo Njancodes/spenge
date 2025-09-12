@@ -89,6 +89,8 @@ int main(int argc, char *argv[]){
 					fclose(f);
 				}else if(fileformat == IMAGE){
 					printf("\nThis is an image file.\nNo Support for it yet\n");
+				}else{
+					printf("\nThis file format is not supported.\n");
 				}
 				
 				printf("\n Do you want to delete (X) or save (S) this file (%s): ",filename);
