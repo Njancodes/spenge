@@ -49,6 +49,11 @@ enum fformat getfformat(const char *filename){
 int main(int argc, char *argv[]){
 	printf("The number of arguments is: %d\n",argc);
 
+	if(argc <= 1){
+		printf("This should give a help line thingy but not now");
+		exit(1);
+	}
+
 	DIR *d;
 	FILE *f;
 	struct dirent *dirent;
@@ -66,17 +71,18 @@ int main(int argc, char *argv[]){
 
 	if((d = opendir(dirpath)) != NULL){
 		while((dirent = readdir(d)) != NULL) {
+			printf("\e[1;1H\e[2J");
 			if(dirent->d_type == DT_REG){
 				const char *filepath = strcat(dirpath, dirent->d_name);
 				const char *filename = dirent->d_name;
 				enum fformat fileformat = getfformat(filename);
 
-				printf("Debug-------------------------------------------");
+				printf("Debug-------------------------------------------\n");
 				printf("Directory name: %s\n",opath);
 				printf("File format: %d\n",fileformat);
 				printf("File path: %s\n",filepath);
 				printf("File name: %s\n",filename);
-				printf("Debug-------------------------------------------");
+				printf("Debug-------------------------------------------\n");
 				
 				if(fileformat == TEXT){
 					f = fopen(filepath, "r");
@@ -88,14 +94,16 @@ int main(int argc, char *argv[]){
 
 					fclose(f);
 				}else if(fileformat == IMAGE){
-					printf("\nThis is an image file.\nNo Support for it yet\n");
+					printf("This is an image file.\nNo Support for it yet\n");
 				}else{
-					printf("\nThis file format is not supported.\n");
+					printf("This file format is not supported.\n");
 				}
 				
-				printf("\n Do you want to delete (X) or save (S) this file (%s): ",filename);
+				printf("\nDo you want to delete (X) or save (S) this file (%s): ",filename);
 				scanf("%c",&choice);
 				getchar();
+				//Maybe a second confirmation before deleting ?
+				//
 				if(toupper(choice) == 'X'){
 					printf("\nThe file (%s) is to be deleted", filename);
 				}else if(toupper(choice) == 'S'){
@@ -104,7 +112,7 @@ int main(int argc, char *argv[]){
 					printf("\nPlease give an appropriate response");
 				}
 				printf("\n");
-				
+					
 				
 				strcpy(dirpath,opath);
 			}
