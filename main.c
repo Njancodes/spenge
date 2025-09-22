@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <regex.h>
+#include <MagickWand/MagickWand.h>
 
 enum fformat {
 	TEXT,
@@ -25,13 +26,14 @@ char* validDirectory(char *dirpath){
 
 enum fformat getfformat(const char *filename){
 	char *ext = strrchr(filename, '.');
+	if(!ext) return ERREXT;
 	enum fformat ff = ERREXT;
 	
 	regex_t textregex;
 	regex_t imageregex;
 
-	int text_reg_errval = regcomp(&textregex,".txt|.c|.py|.java|.rs",REG_EXTENDED);
-	int img_reg_errval = regcomp(&imageregex,".png|.jpg",REG_EXTENDED);
+	int text_reg_errval = regcomp(&textregex,"\\.txt|\\.c|\\.py|\\.java|\\.rs",REG_EXTENDED);
+	int img_reg_errval = regcomp(&imageregex,"\\.png|\\.jpg",REG_EXTENDED);
 
 	int text_file_check = regexec(&textregex,ext,0,NULL,0);
 	int image_file_check = regexec(&imageregex,ext,0,NULL,0);
@@ -43,11 +45,28 @@ enum fformat getfformat(const char *filename){
 		ff = IMAGE;
 	}
 
+
+	regfree(&textregex);
+	regfree(&imageregex);
 	return ff;
 }
 
 int main(int argc, char *argv[]){
 	printf("The number of arguments is: %d\n",argc);
+
+	#define ThrowWandException(wand) \
+	{ \
+		char \
+		  *description; \
+		\
+		 ExceptionType \
+		  severity; \
+		\
+		 description=MagickGetException(wand,&severity); \
+		 (void) fprintf(stderr, "%s %s %lu %s\n",GetMagickModule(), description); \
+		 description = (char *) MagickRelinquishMemory(description); \
+		 exit(-1); \
+	}
 
 	if(argc <= 1){
 		printf("This should give a help line thingy but not now");
@@ -56,25 +75,36 @@ int main(int argc, char *argv[]){
 
 	DIR *d;
 	FILE *f;
-	struct dirent *dirent;
+	struct dirent *entry;
 	int count = 0;
 	int ch;
 	char *dirpath;
 	char *opath;
 	char choice;
 
+	//Image Magick Settings
+	MagickBooleanType status;
+	MagickWand *magick_wand;
+
+	//Magick Wand Genesis
+	MagickWandGenesis();
+	magick_wand = NewMagickWand();
+
 	dirpath = validDirectory(argv[1]);
 	int pathlen = strlen(dirpath);
-	opath = malloc(sizeof(dirpath));
+	opath = malloc(strlen(dirpath)+1);
+	if(!opath){
+		printf("malloc failed");
+	}
 	strcpy(opath, dirpath);
 	printf("The directory path is: %s\n", dirpath);
 
 	if((d = opendir(dirpath)) != NULL){
-		while((dirent = readdir(d)) != NULL) {
-			printf("\e[1;1H\e[2J");
-			if(dirent->d_type == DT_REG){
-				const char *filepath = strcat(dirpath, dirent->d_name);
-				const char *filename = dirent->d_name;
+		while((entry = readdir(d)) != NULL) {
+			printf("\033[2J\033[H");
+			if(entry->d_type == DT_REG){
+				const char *filepath = strcat(dirpath, entry->d_name);
+				const char *filename = entry->d_name;
 				enum fformat fileformat = getfformat(filename);
 
 				printf("Debug-------------------------------------------\n");
@@ -94,7 +124,12 @@ int main(int argc, char *argv[]){
 
 					fclose(f);
 				}else if(fileformat == IMAGE){
-					printf("This is an image file.\nNo Support for it yet\n");
+					ClearMagickWand(magick_wand);
+					status = MagickReadImage(magick_wand, filepath);
+					if(status==MagickFalse){
+						ThrowWandException(magick_wand);
+					}
+					printf("Image has been imported");
 				}else{
 					printf("This file format is not supported.\n");
 				}
