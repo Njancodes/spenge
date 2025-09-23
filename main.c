@@ -82,9 +82,18 @@ int main(int argc, char *argv[]){
 	char *opath;
 	char choice;
 
-	//Image Magick Settings
+	//Image properties
+	size_t y;
+	size_t x;
+	size_t width;
+	size_t depth;
+
+	//Image Magick Definitions
 	MagickBooleanType status;
 	MagickWand *magick_wand;
+	PixelIterator *iterator;
+	PixelWand **row_of_pixels; //Each Pixel here is called a Pixel Wand (Because they are wrappers so to speak around each pixel)
+	PixelInfo pixel;
 
 	//Magick Wand Genesis
 	MagickWandGenesis();
@@ -129,7 +138,22 @@ int main(int argc, char *argv[]){
 					if(status==MagickFalse){
 						ThrowWandException(magick_wand);
 					}
-					printf("Image has been imported");
+					width = MagickGetImageWidth(magick_wand);
+					iterator = NewPixelIterator(magick_wand);
+					printf("\nPixel Data of the Image\n");
+					printf("The QuantumDepth is %s\n", MagickGetQuantumDepth(&depth));
+					for(y = 0; y < MagickGetImageHeight(magick_wand); y++){
+						row_of_pixels = PixelGetNextIteratorRow(iterator, &width);
+						for(x=0;x<width; x++){
+							PixelGetMagickColor(row_of_pixels[x],&pixel);
+							printf("Red: %f, Green: %f, Blue: %f\n", pixel.red, pixel.green, pixel.blue);
+							
+						}
+					}
+					printf("\n");
+
+
+					
 				}else{
 					printf("This file format is not supported.\n");
 				}
