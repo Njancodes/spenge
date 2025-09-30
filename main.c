@@ -5,23 +5,13 @@
 #include <stdlib.h>
 #include <regex.h>
 
+#include "DirReader.h"
+
 enum fformat {
 	TEXT,
 	IMAGE,
 	ERREXT
 };
-
-char* validDirectory(char *dirpath){
-	if(dirpath[0] != '/' && dirpath[0] != '.'){
-		printf("Not a valid directory path");
-		exit(1);
-	}
-	int pathlen = strlen(dirpath);
-	if(dirpath[pathlen - 1] != '/'){
-		dirpath = strcat(dirpath, "/");
-	}
-	return dirpath;
-}
 
 enum fformat getfformat(const char *filename){
 	char *ext = strrchr(filename, '.');
@@ -54,74 +44,57 @@ int main(int argc, char *argv[]){
 		exit(1);
 	}
 
-	DIR *d;
 	FILE *f;
-	struct dirent *dirent;
-	int count = 0;
+	int files_num;
 	int ch;
-	char *dirpath;
-	char *opath;
 	char choice;
+	char** filepaths;
 
-	dirpath = validDirectory(argv[1]);
-	int pathlen = strlen(dirpath);
-	opath = malloc(sizeof(dirpath));
-	strcpy(opath, dirpath);
-	printf("The directory path is: %s\n", dirpath);
-
-	if((d = opendir(dirpath)) != NULL){
-		while((dirent = readdir(d)) != NULL) {
-			printf("\e[1;1H\e[2J");
-			if(dirent->d_type == DT_REG){
-				const char *filepath = strcat(dirpath, dirent->d_name);
-				const char *filename = dirent->d_name;
-				enum fformat fileformat = getfformat(filename);
-
-				printf("Debug-------------------------------------------\n");
-				printf("Directory name: %s\n",opath);
-				printf("File format: %d\n",fileformat);
-				printf("File path: %s\n",filepath);
-				printf("File name: %s\n",filename);
-				printf("Debug-------------------------------------------\n");
-				
-				if(fileformat == TEXT){
-					f = fopen(filepath, "r");
-					printf("\n");
-				
-					while((ch  = getc(f)) != EOF){
-						printf("%c",ch);
-					}
-
-					fclose(f);
-				}else if(fileformat == IMAGE){
-					printf("This is an image file.\nNo Support for it yet\n");
-				}else{
-					printf("This file format is not supported.\n");
-				}
-				
-				printf("\nDo you want to delete (X) or save (S) this file (%s): ",filename);
-				scanf("%c",&choice);
-				getchar();
-				//Maybe a second confirmation before deleting ?
-				//
-				if(toupper(choice) == 'X'){
-					printf("\nThe file (%s) is to be deleted", filename);
-				}else if(toupper(choice) == 'S'){
-					printf("\nThe file (%s) is to be saved",filename);
-				}else{
-					printf("\nPlease give an appropriate response");
-				}
-				printf("\n");
-					
-				
-				strcpy(dirpath,opath);
-			}
-			count += 1;
-		}	
-		count -= 2;	
-	}else{
-		printf("Error in opening the directory");
-		exit(1);
+	
+	filepaths = arrayOfFilePaths(argv[1],&files_num);
+	
+	for(int i = 0; i < files_num; i++){
+		printf("%s\n", filepaths[i]);
 	}
+
+//			printf("\e[1;1H\e[2J");
+
+;
+//				enum fformat fileformat = getfformat(filename);
+//
+//				printf("Debug-------------------------------------------\n");
+//				printf("Directory name: %s\n",opath);
+//				printf("File format: %d\n",fileformat);
+//				printf("File path: %s\n",filepath);
+//				printf("File name: %s\n",filename);
+//				printf("Debug-------------------------------------------\n");
+				
+//				if(fileformat == TEXT){
+//					f = fopen(filepath, "r");
+//					printf("\n");
+//				
+//					while((ch  = getc(f)) != EOF){
+//						printf("%c",ch);
+//					}
+//
+//					fclose(f);
+//				}else if(fileformat == IMAGE){
+//					printf("This is an image file.\nNo Support for it yet\n");
+//				}else{
+//					printf("This file format is not supported.\n");
+//				}
+//				
+//				printf("\nDo you want to delete (X) or save (S) this file (%s): ",filename);
+//				scanf("%c",&choice);
+//				getchar();
+//				//Maybe a second confirmation before deleting ?
+//				//
+//				if(toupper(choice) == 'X'){
+//					printf("\nThe file (%s) is to be deleted", filename);
+//				}else if(toupper(choice) == 'S'){
+//					printf("\nThe file (%s) is to be saved",filename);
+//				}else{
+//					printf("\nPlease give an appropriate response");
+//				}
 	return 0;
 }
