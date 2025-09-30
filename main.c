@@ -6,35 +6,7 @@
 #include <regex.h>
 
 #include "DirReader.h"
-
-enum fformat {
-	TEXT,
-	IMAGE,
-	ERREXT
-};
-
-enum fformat getfformat(const char *filename){
-	char *ext = strrchr(filename, '.');
-	enum fformat ff = ERREXT;
-	
-	regex_t textregex;
-	regex_t imageregex;
-
-	int text_reg_errval = regcomp(&textregex,".txt|.c|.py|.java|.rs",REG_EXTENDED);
-	int img_reg_errval = regcomp(&imageregex,".png|.jpg",REG_EXTENDED);
-
-	int text_file_check = regexec(&textregex,ext,0,NULL,0);
-	int image_file_check = regexec(&imageregex,ext,0,NULL,0);
-
-	if(text_file_check != REG_NOMATCH){
-		ff = TEXT;
-	}
-	if(image_file_check != REG_NOMATCH){
-		ff = IMAGE;
-	}
-
-	return ff;
-}
+#include "FileReader.h"
 
 int main(int argc, char *argv[]){
 	printf("The number of arguments is: %d\n",argc);
@@ -55,6 +27,7 @@ int main(int argc, char *argv[]){
 	
 	for(int i = 0; i < files_num; i++){
 		printf("%s\n", filepaths[i]);
+		showcaseFile(filepaths[i]);
 	}
 
 //			printf("\e[1;1H\e[2J");
