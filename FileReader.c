@@ -13,7 +13,6 @@ enum fformat {
 void readTextFile(char *filepath){
 	FILE *f = fopen(filepath, "r");
 	int ch;	
-	printf("\n");
 
 	while((ch = getc(f)) != EOF){
 		printf("%c",ch);
@@ -29,7 +28,9 @@ void readImageFile(char *filepath){
 
 enum fformat getfformat(const char *filename){
 	char *ext = strchr(filename, '.');
+	if(!ext) return ERREXT;
 	enum fformat ff = ERREXT;
+
 
 	regex_t textregex;
 	regex_t imageregex;

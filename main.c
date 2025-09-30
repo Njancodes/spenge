@@ -26,14 +26,25 @@ int main(int argc, char *argv[]){
 	filepaths = arrayOfFilePaths(argv[1],&files_num);
 	
 	for(int i = 0; i < files_num; i++){
+		printf("\e[1;1H\e[2J");
 		printf("%s\n", filepaths[i]);
+		printf("\n");
 		showcaseFile(filepaths[i]);
+		printf("\n");
+		printf("\nDo you want to delete (X) or save (S) this file: ");
+		scanf("%c",&choice);
+		getchar();
+		//Maybe a second confirmation before deleting ?
+	
+		if(toupper(choice) == 'X'){
+			printf("\nThe file is to be deleted");
+		}else if(toupper(choice) == 'S'){
+			printf("\nThe file is to be saved");
+		}else{
+			printf("\nPlease give an appropriate response");			 }
+		
 	}
 
-//			printf("\e[1;1H\e[2J");
-
-;
-//				enum fformat fileformat = getfformat(filename);
 //
 //				printf("Debug-------------------------------------------\n");
 //				printf("Directory name: %s\n",opath);
@@ -42,32 +53,6 @@ int main(int argc, char *argv[]){
 //				printf("File name: %s\n",filename);
 //				printf("Debug-------------------------------------------\n");
 				
-//				if(fileformat == TEXT){
-//					f = fopen(filepath, "r");
-//					printf("\n");
-//				
-//					while((ch  = getc(f)) != EOF){
-//						printf("%c",ch);
-//					}
-//
-//					fclose(f);
-//				}else if(fileformat == IMAGE){
-//					printf("This is an image file.\nNo Support for it yet\n");
-//				}else{
-//					printf("This file format is not supported.\n");
-//				}
-//				
-//				printf("\nDo you want to delete (X) or save (S) this file (%s): ",filename);
-//				scanf("%c",&choice);
-//				getchar();
-//				//Maybe a second confirmation before deleting ?
-//				//
-//				if(toupper(choice) == 'X'){
-//					printf("\nThe file (%s) is to be deleted", filename);
-//				}else if(toupper(choice) == 'S'){
-//					printf("\nThe file (%s) is to be saved",filename);
-//				}else{
-//					printf("\nPlease give an appropriate response");
-//				}
+
 	return 0;
 }
