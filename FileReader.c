@@ -1,7 +1,10 @@
 #include <regex.h>
 #include <string.h>
 #include <stdio.h>
-
+#include <unistd.h>
+#include <stdlib.h>
+#define WIDTH 10
+#define HEIGHT 10
 
 enum fformat {
 	TEXT,
@@ -10,7 +13,7 @@ enum fformat {
 };
 
 
-void readTextFile(char *filepath){
+void readTextFile(const char *filepath){
 	FILE *f = fopen(filepath, "r");
 	int ch;	
 
@@ -21,8 +24,19 @@ void readTextFile(char *filepath){
 	fclose(f);
 }
 
+void draw_pixel(int x, int y, int r, int g, int b){
+	printf("\x1b_Ga=%d,b=%d,c=%d;P0e[0m",r,g,b);
+	printf("\x1b_[0;0He[0;%dHe[Je[u]",y,x);
+}
+
 void readImageFile(char *filepath){
-	printf("This is an image file.\n No Support yet");
+	char *base_command = "viu ";
+	char command[strlen(base_command) + strlen(filepath) + 2];
+
+	strcat(command, base_command);
+	strcat(command, filepath);
+	printf("%s", command);
+	system(command);
 }
 
 
@@ -51,12 +65,11 @@ enum fformat getfformat(const char *filename){
 }
 
 void showcaseFile(char *filepath){
-	const enum fformat ff = getfformat(filepath);
-	
+	const enum fformat ff = getfformat(filepath);	
 	if(ff == TEXT){
 		readTextFile(filepath);
 	}else if(ff == IMAGE){
-		readImageFile(filepath);
+	       readImageFile(filepath);	
 	}else{
 		printf("Unknown File.\n");
 	}
