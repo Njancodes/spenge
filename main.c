@@ -38,6 +38,11 @@ int main(int argc, char *argv[]){
 	
 		if(toupper(choice) == 'X'){
 			printf("\nThe file is to be deleted");
+			if(remove(filepaths[i]) == 0){
+				printf("File deleted successfully");
+			}else{
+				printf("Error: unable to delete file");
+			}
 		}else if(toupper(choice) == 'S'){
 			printf("\nThe file is to be saved");
 		}else{

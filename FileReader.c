@@ -35,7 +35,7 @@ void readImageFile(char *filepath){
 
 	strcat(command, base_command);
 	strcat(command, filepath);
-	printf("%s", command);
+	//printf("%s", command);
 	system(command);
 }
 
